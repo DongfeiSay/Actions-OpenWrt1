@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 ###############手动修改##############
-name: immortalwrt-X86_64
+name: immortalwrt-x86_64
 
 on:
   repository_dispatch:
@@ -158,21 +158,6 @@ jobs:
         [ -s TARGET_NAME ] && echo "TARGET_NAME=$(cat TARGET_NAME)" >> $GITHUB_ENV
         sed -n 's/.*lan) ipad=${ipaddr:-"\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\)"} ;;.*/\1/p' package/base-files/files/bin/config_generate | head -n 1 > IP_ADDR
         [ -s IP_ADDR ] && echo "IP_ADDR=$(cat IP_ADDR)" >> $GITHUB_ENV
-        if grep -q 'CONFIG_MTK_MT_WIFI_DRIVER_VERSION_7661=y' .config; then
-                echo "WIFI_VERSION=-v7661" >> $GITHUB_ENV
-        else
-                echo "WIFI_VERSION=-v7672" >> $GITHUB_ENV
-        fi
-        if sed -n '/jdcloud,re-cp-03)/,/;;/p' target/linux/mediatek/mt7986/base-files/etc/board.d/02_network | grep -q 'ucidef_add_switch "switch0"'; then
-                echo "SWITCH=-gsw" >> $GITHUB_ENV
-        else
-                echo "SWITCH=-dsa" >> $GITHUB_ENV
-        fi
-        if grep -q 'CONFIG_PACKAGE_mtwifi-cfg=y' .config; then
-                echo "WIFI_INTERFACE=-mtwifi" >> $GITHUB_ENV
-        else
-                echo "WIFI_INTERFACE=" >> $GITHUB_ENV
-        fi
         if grep -q 'CONFIG_PACKAGE_luci-app-dockerman=y' .config; then
                 echo "BUILD_DOCKERMAN=-docker" >> $GITHUB_ENV
         else
@@ -192,7 +177,7 @@ jobs:
         cd openwrt/bin/targets/*/*
         rm -rf packages
         sudo -E apt-get -qq install rename
-        rename 's/.*${{ env.DEVICE_NAME }}/${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.WIFI_VERSION }}${{ env.SWITCH }}${{ env.BUILD_DOCKERMAN }}/' *
+        rename 's/.*${{ env.DEVICE_NAME }}/${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.SWITCH }}${{ env.BUILD_DOCKERMAN }}/' *
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
@@ -200,7 +185,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: ${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.WIFI_VERSION }}${{ env.SWITCH }}${{ env.BUILD_DOCKERMAN }}
+        name: ${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.SWITCH }}${{ env.BUILD_DOCKERMAN }}
         path: ${{ env.FIRMWARE }}
 
     - name: 生成固件Release标签
@@ -216,7 +201,7 @@ jobs:
         else
                 echo "- 未编译luci-app-dockerman" >> release.txt
         fi
-        echo "release_tag=${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.WIFI_VERSION }}${{ env.SWITCH }}${{ env.BUILD_DOCKERMAN }}" >> $GITHUB_OUTPUT
+        echo "release_tag=${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.SWITCH }}${{ env.BUILD_DOCKERMAN }}" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 发布固件至Release
@@ -226,6 +211,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: ${{ env.FIRMWARE }}/*
-        name: ${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.WIFI_VERSION }}${{ env.SWITCH }}${{ env.BUILD_DOCKERMAN }}
+        name: ${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.SWITCH }}${{ env.BUILD_DOCKERMAN }}
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
