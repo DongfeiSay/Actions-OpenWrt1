@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 ###############手动修改##############
-name: immortalwrt-hanwckf
+name: immortalwrt-21.02
 
 on:
   repository_dispatch:
@@ -32,8 +32,8 @@ on:
 
 env:
   ###############手动修改##############
-  OPENWRT_NAME: hanwckf
-  REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
+  OPENWRT_NAME: immortalwrt-21.02
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
@@ -77,11 +77,11 @@ jobs:
         
         # all of these default to true, but feel free to set to
         # "false" if necessary for your workflow
-        android: false
-        dotnet: false
-        haskell: false
-        large-packages: false
-        swap-storage: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        swap-storage: true
 
     - name: 下载固件源码
       working-directory: /workdir
