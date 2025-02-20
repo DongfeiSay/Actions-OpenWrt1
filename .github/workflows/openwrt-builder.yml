@@ -27,10 +27,6 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
-        type: choice
-        options:
-        - false
-        - true
 #  schedule:
 #    - cron: 0 16 * * *
 
