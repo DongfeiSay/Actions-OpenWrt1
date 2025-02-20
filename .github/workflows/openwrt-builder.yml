@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 ###############手动修改##############
-name: immortalwrt-X86
+name: immortalwrt-X86_64
 
 on:
   repository_dispatch:
